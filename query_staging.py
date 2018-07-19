@@ -18,17 +18,14 @@ logger.setLevel(logging.INFO)
 
 try:
     #DB_Source
-    conn = create_engine('postgresql://odoo:rc22ODWbBNnm79QZvZ@warpindb-prod-ap-southeast-1b.caplyqfnwfh3.ap-southeast-1.rds.amazonaws.com:5432/odoo')
+    conn = create_engine('postgresql://username:hostname:5432/password')
     #DB_Target
-    conn_target = create_engine('postgresql://wpsdatawh:1ribuwarungpintar@warpindatawh.caplyqfnwfh3.ap-southeast-1.rds.amazonaws.com:5432/warpindatawh')
+    conn_target = create_engine('postgresql://username:hostname:5432/password')
 except:
     logger.error("ERROR: Unexpected error: Could not connect to PostgreSQL instance.")
     sys.exit()
 
 logger.info("SUCCESS: Connection to RDS PostgreSQL instance succeeded")
-
-cur = conn.cursor()
-cur_target = conn_target.cursor()
 
 #Source
 table = etl.fromdb(conn, """select 
@@ -46,8 +43,8 @@ table = etl.fromdb(conn, """select
 aggregation = OrderedDict()
 aggregation['qty'] = 'qty', sum
 aggregation['total'] = 'total', sum
-table5 = etl.aggregate(table, 'name', aggregation)
-dfsum = etl.todataframe(table5)
+table1 = etl.aggregate(table, 'name', aggregation)
+dfsum = etl.todataframe(table1)
 
 #Target
 dfsum.to_sql('GMV Warung', conn_target, if_exists='replace', index=None)
